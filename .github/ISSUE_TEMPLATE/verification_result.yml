@@ -1,0 +1,56 @@
+name: Verification result
+description: Report what worked (or didn't) against a real Planner Premium environment
+labels: [verification]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Parts of this solution are verified only against mock tables. Real-environment results
+        are the most valuable contribution to this repo.
+
+        **Redact your org URL, tenant ID and GUIDs.**
+
+  - type: dropdown
+    id: schedule-api
+    attributes:
+      label: Did the three Project Schedule API calls succeed?
+      description: "`msdyn_CreateOperationSetV1`, `msdyn_PssCreateV1`, `msdyn_ExecuteOperationSetV1`"
+      options:
+        - "Yes — all three succeeded and the card was created"
+        - "Partially — operation set executed but no task appeared"
+        - "No — one or more calls failed"
+        - "Not tested"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: lookup-names
+    attributes:
+      label: Were msdyn_projectname / msdyn_projectbucketname populated in the trigger payload?
+      options:
+        - "Yes — the name-based condition worked"
+        - "No — I had to switch to _msdyn_projectbucket_value"
+        - "Not tested"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: dedupe
+    attributes:
+      label: Did the dedupe guard hold?
+      options:
+        - "Yes — re-escalating created no extra copies"
+        - "No — duplicates were created"
+        - "Not tested"
+
+  - type: textarea
+    id: extra-columns
+    attributes:
+      label: Did Planner Premium add columns beyond what Project Operations installs?
+      description: Output from `Discover-PlannerPremiumSchema.ps1` is ideal here.
+      render: text
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else worth recording
