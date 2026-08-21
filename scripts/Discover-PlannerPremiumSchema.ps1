@@ -82,7 +82,7 @@ foreach ($table in @('msdyn_project', 'msdyn_projecttask', 'msdyn_projectbucket'
     @{n = 'Create'; e = { $_.IsValidForCreate } },
     @{n = 'Update'; e = { $_.IsValidForUpdate } } -AutoSize
 
-    # Anything that smells like a label / tag / category — this is the column
+    # Anything that smells like a label / tag / category - this is the column
     # that Planner Premium's "escalate" tag most likely maps to.
     $tagish = $attrs | Where-Object {
         $_.LogicalName -match 'label|tag|categor|flag|escalat'
@@ -110,7 +110,7 @@ if ($interesting.LogicalName -contains 'msdyn_projecttask') {
 }
 
 # ---------------------------------------------------------------------------
-# 4. Sample data — the fastest way to see how a real "escalate" tag is stored
+# 4. Sample data - the fastest way to see how a real "escalate" tag is stored
 # ---------------------------------------------------------------------------
 Write-Host "`n=== 4. Sample plans ===" -ForegroundColor Green
 

@@ -1,6 +1,6 @@
 # Contributing
 
-Contributions are welcome — particularly **verification results**. Several behaviours in this repo
+Contributions are welcome - particularly **verification results**. Several behaviours in this repo
 are documented as unproven (see the "What is and isn't proven" section of the README), and a
 confirmation or correction from a real Planner Premium environment is the single most valuable
 contribution possible here.
@@ -8,7 +8,6 @@ contribution possible here.
 ## Reporting a result
 
 If you run this against a genuine Project for the web install, please open an issue stating:
-
 - Whether the three Project Schedule API calls succeeded
 - Whether `msdyn_projectname` / `msdyn_projectbucketname` were populated in the trigger payload
 - Your environment type and Project licence
@@ -22,7 +21,7 @@ underlying failure reason, which is almost always the useful part.
 
 ## Pull requests
 
-1. Keep changes focused — one concern per PR.
+1. Keep changes focused - one concern per PR.
 2. PowerShell scripts must stay idempotent and take `-OrgUrl` as a mandatory parameter.
 3. Never commit an org URL, tenant ID, connection ID, token or `.snk` file. Run the pre-publish
    scan before pushing.

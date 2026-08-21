@@ -1,7 +1,7 @@
-# Planner Premium Automation — Escalate a card to your manager's 1:1
+# Planner Premium Automation - Escalate a card to your manager's 1:1
 
 Automate Microsoft Planner Premium (Project for the web) with Power Automate, using the
-**Dataverse** connector — because the Planner connector cannot see Premium plans at all.
+**Dataverse** connector - because the Planner connector cannot see Premium plans at all.
 
 Ships as an importable managed solution, configured entirely through environment variables.
 No flow editing required.
@@ -23,12 +23,12 @@ the first step, because:
 
 > **The `shared_planner` connector does not work with Planner Premium.**
 
-The Planner connector talks to Planner Basic — Group-backed plans behind the Graph `/planner`
+The Planner connector talks to Planner Basic - Group-backed plans behind the Graph `/planner`
 endpoints. Planner **Premium** plans are Project for the web plans, and they live in **Dataverse**,
 in your tenant's default environment, as `msdyn_project*` tables. The connector cannot see them.
 
 So people try the Planner actions, get empty results or errors, and conclude Planner Premium can't
-be automated. It can — through an entirely different connector, against tables that aren't
+be automated. It can - through an entirely different connector, against tables that aren't
 obviously documented as being Planner at all.
 
 ## What this solves
@@ -38,7 +38,7 @@ obviously documented as being Planner at all.
 | Planner connector returns nothing for Premium plans | Builds on the **Dataverse** connector against `msdyn_project*` |
 | No published mapping of Planner UI concepts to tables | Full mapping table, taken from live metadata |
 | Escalated cards get retyped or lost | Trigger copies the card automatically on bucket move |
-| Naive automations create endless duplicates | Dedupe guard — 9 trigger fires produced exactly 3 cards |
+| Naive automations create endless duplicates | Dedupe guard - 9 trigger fires produced exactly 3 cards |
 | Automations fire on their own writes and loop | Documented loop-guard behaviour and how to keep it |
 | Handover to a non-technical owner | Four environment variables set at import; no flow editing |
 | Can't test without a Premium licence | Mock schema + seed scripts reproduce the tables |
@@ -86,14 +86,14 @@ people hours.
 
 1. Create a bucket named `Escalate` in the source plan, and `Escalated from team` in the target plan.
 2. Import `solution/PlannerPremiumEscalate_2_0_0_0.zip` into the environment holding your Planner
-   Premium data — normally the **default** environment.
+   Premium data - normally the **default** environment.
 3. Enter your four plan and bucket names when prompted at import.
 4. Turn the flow on. It ships disabled deliberately.
 
 Full walkthrough for non-technical owners: **[docs/setup-guide.md](docs/setup-guide.md)**
 Architecture, design decisions and gotchas: **[docs/technical-design.md](docs/technical-design.md)**
 
-> **Environment matters.** Dataverse triggers cannot fire on changes in another environment — only
+> **Environment matters.** Dataverse triggers cannot fire on changes in another environment - only
 > actions can read across. Install this alongside the data or it will import cleanly and never run.
 
 ---
@@ -101,7 +101,7 @@ Architecture, design decisions and gotchas: **[docs/technical-design.md](docs/te
 ## Design decisions
 
 **Bucket-driven, not label-driven.** Planner's coloured labels are a Planner-layer concept with no
-corresponding filterable column on `msdyn_projecttask` — verified against live metadata. A
+corresponding filterable column on `msdyn_projecttask` - verified against live metadata. A
 label-based trigger has nothing to filter on. Dragging a card into a bucket is also more visible to
 the user. Custom-column and naming-convention alternatives are documented as Options B and C.
 
@@ -141,7 +141,7 @@ the bucket GUID.
 | `Build-DistributableSolution.ps1` | Builds, exports, injects the Schedule API definition, repacks and verifies |
 | `Discover-PlannerPremiumSchema.ps1` | Dumps real table/column/lookup names from an environment |
 | `Test-EscalateSolution.ps1` | Seeds plans, buckets and cards for an end-to-end test |
-| `Build-MockPlannerSchema.ps1` | Creates mock tables mirroring the schema — **test without a Premium licence** |
+| `Build-MockPlannerSchema.ps1` | Creates mock tables mirroring the schema - **test without a Premium licence** |
 | `Seed-MockPlannerData.ps1` | Seeds the two-plan 1:1 scenario |
 
 All take `-OrgUrl` and are idempotent.
@@ -151,7 +151,7 @@ All take `-OrgUrl` and are idempotent.
 ## Licensing gotcha
 
 Reading and writing `msdyn_*` tables needs a Project Plan 3 / Planner Premium licence on the flow's
-connection identity — a Power Automate licence alone is not enough.
+connection identity - a Power Automate licence alone is not enough.
 
 Check **bundled service plans**, not top-level SKU names. `PROJECT_FOR_PROJECT_OPERATIONS` and
 `PROJECT_ESSENTIALS` frequently sit inside another licence and are already provisioned:
@@ -163,18 +163,17 @@ GET https://graph.microsoft.com/v1.0/subscribedSkus
 Then inspect each `servicePlans[]`. Getting this wrong is the most common reason people conclude
 the work is impossible when it isn't.
 
-Entitlement is also separate from provisioning — `msdyn_project*` tables only appear once the
+Entitlement is also separate from provisioning - `msdyn_project*` tables only appear once the
 Project app is **installed into that specific environment**.
 
 ---
 
 ## Limitations
-
 - Copies the card **title** plus an origin note. Not checklists, attachments, assignees or due dates.
 - One-way copy. Later edits to the original don't update the copy.
 - Dragging a card out of `Escalate` does not remove the copy.
-- Allow 30–60 seconds between the change and the copy appearing.
-- Buckets must be created by hand — Planner Premium doesn't allow automated bucket creation.
+- Allow 30-60 seconds between the change and the copy appearing.
+- Buckets must be created by hand - Planner Premium doesn't allow automated bucket creation.
 
 **Privacy:** card titles are copied into a plan the manager can see.
 
@@ -182,4 +181,4 @@ Project app is **installed into that specific environment**.
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).

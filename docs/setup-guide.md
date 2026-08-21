@@ -1,4 +1,4 @@
-# Escalate a 1:1 card to your manager's 1:1 — Setup Guide
+# Escalate a 1:1 card to your manager's 1:1 - Setup Guide
 
 **What this does:** when you drag a card into a bucket called **Escalate** in your team 1:1 plan,
 a copy of that card automatically appears in your 1:1 plan with your manager.
@@ -13,11 +13,10 @@ Setup takes about 10 minutes.
 ## Before you start
 
 You need:
-
 - **Microsoft Planner with a Premium plan licence** (Project Plan 3 / Planner Premium). The
   automation reads Premium plan data, which ordinary Planner plans don't have.
 - Permission to import a solution into your environment. If you don't have it, your Power Platform
-  admin does — send them this guide.
+  admin does - send them this guide.
 
 > **Which environment?** Import into the environment your Planner Premium data lives in, which is
 > almost always your organisation's **default** environment. This matters: the automation has to sit
@@ -26,7 +25,7 @@ You need:
 
 ---
 
-## Step 1 — Create your buckets in Planner
+## Step 1 - Create your buckets in Planner
 
 Do this first, in Planner itself, before importing anything.
 
@@ -42,7 +41,7 @@ In your **1:1 plan with your manager**, create a bucket named exactly:
 Escalated from team
 ```
 
-You can use different names — just note down exactly what you typed, including capital letters and
+You can use different names - just note down exactly what you typed, including capital letters and
 spacing, because you'll enter them in Step 3.
 
 > Buckets have to be made by hand here. Planner Premium doesn't allow buckets to be created
@@ -50,7 +49,7 @@ spacing, because you'll enter them in Step 3.
 
 ---
 
-## Step 2 — Import the solution
+## Step 2 - Import the solution
 
 1. Go to **make.powerapps.com** and check the environment name shown in the top right is the one
    you want (see the note above).
@@ -61,13 +60,13 @@ spacing, because you'll enter them in Step 3.
    **New connection**, sign in, and come back to this screen.
 6. Select **Next**.
 
-Don't select Import yet — the next screen is where you configure it.
+Don't select Import yet - the next screen is where you configure it.
 
 ---
 
-## Step 3 — Fill in your four names
+## Step 3 - Fill in your four names
 
-The import screen asks for four values. These are plain text — type the names exactly as they
+The import screen asks for four values. These are plain text - type the names exactly as they
 appear in Planner.
 
 | Setting | What to type | Example |
@@ -77,14 +76,14 @@ appear in Planner.
 | **Copy into this plan** | Your 1:1 plan with your manager | `1:1 with my manager` |
 | **Bucket for copies** | Where copies should land in that plan | `Escalated from team` |
 
-**Names must match exactly** — capitals, spaces and punctuation all count. `Escalate` and
+**Names must match exactly** - capitals, spaces and punctuation all count. `Escalate` and
 `escalate ` (with a trailing space) are different.
 
-Now select **Import**. It usually takes 1–3 minutes.
+Now select **Import**. It usually takes 1-3 minutes.
 
 ---
 
-## Step 4 — Turn it on
+## Step 4 - Turn it on
 
 The automation is deliberately installed **switched off**, so nothing happens until you've checked
 your settings.
@@ -96,7 +95,7 @@ your settings.
 
 ---
 
-## Step 5 — Test it
+## Step 5 - Test it
 
 1. In your team 1:1 plan, drag any card into the **Escalate** bucket.
 2. Wait about a minute.
@@ -111,16 +110,15 @@ should still have only **one** copy in your manager's plan.
 
 **Nothing appears after a few minutes.**
 Open the flow (Step 4) and look at **28-day run history** at the bottom.
-
-- *No runs at all* — the automation isn't seeing your plan. Most likely it's installed in a
+- *No runs at all* - the automation isn't seeing your plan. Most likely it's installed in a
   different environment from your Planner data. Check the environment name in the top right.
-- *A run shows "Failed" with a message about names* — one of your four names doesn't match. The
+- *A run shows "Failed" with a message about names* - one of your four names doesn't match. The
   error message names which one. Fix it in **Solutions → … → Environment variables**, then retry.
-- *Runs show "Succeeded" but no card appears* — the copy was created in a different plan than you
+- *Runs show "Succeeded" but no card appears* - the copy was created in a different plan than you
   expected. Check **Copy into this plan** and **Bucket for copies**.
 
 **Cards appear twice.**
-Shouldn't happen — the automation records where each copy came from. If it does, check you haven't
+Shouldn't happen - the automation records where each copy came from. If it does, check you haven't
 imported the solution twice, or turned on two copies of the flow.
 
 **I want to change a name later.**
@@ -141,7 +139,7 @@ Open the flow and select **Turn off**. Cards already copied stay where they are.
 
 **Doesn't:**
 - Copy checklists, attachments, assignees, comments or due dates
-- Keep the two cards in sync — later edits to the original don't update the copy
+- Keep the two cards in sync - later edits to the original don't update the copy
 - Remove the copy if you drag the card back out of **Escalate**
 
 **Privacy note:** the card title is copied into a plan your manager can see. If a title contains

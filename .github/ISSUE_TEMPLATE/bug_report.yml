@@ -2,44 +2,40 @@ name: Bug report
 description: Something doesn't work as described
 labels: [bug]
 body:
-  - type: markdown
+- type: markdown
     attributes:
       value: |
         **Before posting, redact your org URL, tenant ID, connection ID and any GUIDs.**
-
-  - type: textarea
+- type: textarea
     id: what-happened
     attributes:
       label: What happened
       description: What did you expect, and what occurred instead?
     validations:
       required: true
-
-  - type: dropdown
+- type: dropdown
     id: environment-check
     attributes:
       label: Is the solution installed in the same environment as your Planner Premium data?
       description: Dataverse triggers cannot fire on changes in another environment.
       options:
-        - "Yes — default environment, same as the Planner data"
-        - "No — a different environment"
-        - "Not sure"
+- "Yes - default environment, same as the Planner data"
+- "No - a different environment"
+- "Not sure"
     validations:
       required: true
-
-  - type: dropdown
+- type: dropdown
     id: run-history
     attributes:
       label: What does the flow's 28-day run history show?
       options:
-        - "No runs at all"
-        - "Runs failed"
-        - "Runs succeeded but no card appeared"
-        - "Cards appeared more than once"
+- "No runs at all"
+- "Runs failed"
+- "Runs succeeded but no card appeared"
+- "Cards appeared more than once"
     validations:
       required: true
-
-  - type: textarea
+- type: textarea
     id: failure-detail
     attributes:
       label: Failure detail
@@ -47,8 +43,7 @@ body:
         For failed runs, paste the detail from the failing step.
         `Execute_operation_set` returns the underlying reason.
       render: text
-
-  - type: input
+- type: input
     id: licence
     attributes:
       label: Project licence on the flow's connection identity

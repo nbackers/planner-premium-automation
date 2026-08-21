@@ -17,7 +17,7 @@ The four settings are **plain text plan and bucket names**, not GUIDs:
 
 This is deliberate. Asking a non-developer to find four Dataverse GUIDs is the single biggest
 barrier to hand-off. Names work because the trigger payload already carries the denormalised lookup
-names — `msdyn_projectname` and `msdyn_projectbucketname` — so the "should I act?" decision costs no
+names - `msdyn_projectname` and `msdyn_projectbucketname` - so the "should I act?" decision costs no
 extra queries. Only the target plan and bucket need resolving to GUIDs, and only on the rare
 occasion a card is actually escalated.
 
@@ -26,13 +26,13 @@ rather than silently doing nothing. A typo is the most likely setup mistake, so 
 
 Verified: this ZIP imports successfully into a real Dataverse environment with the `msdyn_project*`
 tables, and the flow arrives with the correct trigger, conditions, name lookups and guard intact.
-It was *not* run end-to-end — see *What is and isn't proven*.
+It was *not* run end-to-end - see *What is and isn't proven*.
 
 ---
 
 ## Where the flow must live
 
-**Install it in the same environment as the Planner Premium data** — normally the tenant's
+**Install it in the same environment as the Planner Premium data** - normally the tenant's
 **default** environment.
 
 This isn't a preference. Per Microsoft's documentation on cross-environment Dataverse:
@@ -42,7 +42,7 @@ This isn't a preference. Per Microsoft's documentation on cross-environment Data
 
 Actions ending in *"…from selected environment"* can read across environments, but **triggers
 cannot**. So a flow sitting in a dev environment pointed at the default environment cannot use the
-real-time trigger at all — it has to fall back to a **Recurrence + List rows** polling loop, which
+real-time trigger at all - it has to fall back to a **Recurrence + List rows** polling loop, which
 means delay, more API calls, and an extra connection-permissions problem in the target environment.
 
 Installing into the data's own environment avoids all of that and is also simpler to hand over:
@@ -71,7 +71,7 @@ Task name is `msdyn_subject` (NOT `name` or `subject`).
 
 ---
 
-## Step 0 — find the right environment (do this first)
+## Step 0 - find the right environment (do this first)
 
 ```powershell
 pac org list
@@ -87,12 +87,12 @@ Then confirm the tables are actually there:
 ```
 
 If it prints `msdyn_projecttask was NOT found`, you're on the wrong environment. If it prints the
-column list, you're in business — and section 5 of its output dumps the **raw JSON of real cards**,
+column list, you're in business - and section 5 of its output dumps the **raw JSON of real cards**,
 which is how you confirm exactly how the tag is stored.
 
 ---
 
-## Step 1 — decide what "tag as escalate" means
+## Step 1 - decide what "tag as escalate" means
 
 This is the one design decision, and it drives everything else.
 
@@ -102,24 +102,23 @@ unless the discovery script shows you a concrete label column you can filter on.
 
 Three options, best first:
 
-**Option A — a bucket called "Escalate" (recommended).**
-Zero customisation, works today, trivially filterable, and it's visually obvious in the UI —
-your colleague literally drags the card into the Escalate bucket.
+**Option A - a bucket called "Escalate" (recommended).**
+Zero customisation, works today, trivially filterable, and it's visually obvious in the UI - your colleague literally drags the card into the Escalate bucket.
 
-**Option B — a custom Yes/No column on the task.**
+**Option B - a custom Yes/No column on the task.**
 Add `cr123_escalate` (Two Options) to `msdyn_projecttask`. Clean and precise, and Dataverse can
 trigger directly on that column changing. Requires a small schema change to a Microsoft table.
 
-**Option C — a naming convention**, e.g. prefix the card title with `[escalate]`.
+**Option C - a naming convention**, e.g. prefix the card title with `[escalate]`.
 Ugly, but needs no setup at all and `contains(msdyn_subject,'escalate')` just works.
 
 Everything below uses **Option A**, with the Option B/C filters noted inline.
 
 ---
 
-## Step 2 — get the two plan IDs
+## Step 2 - get the two plan IDs
 
-Run this once and save both GUIDs — you'll hardcode them in the flow.
+Run this once and save both GUIDs - you'll hardcode them in the flow.
 
 ```
 GET https://orgXXXX.crm.dynamics.com/api/data/v9.2/msdyn_projects
@@ -128,8 +127,8 @@ GET https://orgXXXX.crm.dynamics.com/api/data/v9.2/msdyn_projects
 ```
 
 You want:
-- `SOURCE_PLAN_ID` — the colleague's 1:1s-with-their-team plan
-- `TARGET_PLAN_ID` — their 1:1-with-manager plan
+- `SOURCE_PLAN_ID` - the colleague's 1:1s-with-their-team plan
+- `TARGET_PLAN_ID` - their 1:1-with-manager plan
 
 And the Escalate bucket in the source plan:
 
@@ -141,7 +140,7 @@ GET .../msdyn_projectbuckets
 
 ---
 
-## Step 3 — the flow
+## Step 3 - the flow
 
 ### Trigger: Dataverse → *When a row is added, modified or deleted*
 
@@ -154,13 +153,12 @@ GET .../msdyn_projectbuckets
 | Filter rows | `_msdyn_project_value eq SOURCE_PLAN_ID` |
 
 Two things people get wrong here:
-
 - **Scope must be `Organization`.** The default is `User`, and the flow owner does not own the
   Planner-created rows, so the trigger silently never fires.
 - **Set `Select columns`.** Without it the trigger fires on *every* field change, including the
   scheduling-engine churn Project writes constantly. You'll burn through runs for nothing.
 
-> **Verified gotcha — singular vs plural table name.** If you build this flow from JSON rather than
+> **Verified gotcha - singular vs plural table name.** If you build this flow from JSON rather than
 > the designer, the **trigger** takes the *singular logical name* (`msdyn_projecttask`) while the
 > **actions** take the *plural entity set name* (`msdyn_projecttasks`). Getting this wrong fails at
 > **save** time, not run time, with a misleading error:
@@ -213,7 +211,7 @@ rejected at runtime with:
 > `We're sorry. You cannot directly do 'Create' operation to 'msdyn_projecttask'. Try editing it through the Resource editing UI in Dynamics or via Project.`
 
 The same applies to `msdyn_projectbucket`. (`msdyn_project` itself *can* be created directly.)
-Verified against a real environment — a flow built with **Add a new row** saves happily and then
+Verified against a real environment - a flow built with **Add a new row** saves happily and then
 fails on every run.
 
 The supported route is the **Project Schedule API**, using three *Perform an unbound action* steps:
@@ -242,22 +240,21 @@ The `Entity` payload for step 2:
 ```
 
 Points that matter:
-
 - **You must generate the primary key yourself** with `guid()`. The Schedule API requires the id in
-  the payload — it does not hand one back.
+  the payload - it does not hand one back.
 - Lookups still use **`@odata.bind`** with the entity-set path, not a bare GUID.
-- Reads are *not* restricted — the dedupe **List rows** step uses the ordinary Dataverse action.
+- Reads are *not* restricted - the dedupe **List rows** step uses the ordinary Dataverse action.
 
 
 ---
 
-## Proven working — prototype results
+## Proven working - prototype results
 
 The logic below is not theoretical. It was built and run end-to-end against mock tables that
 mirror the Planner Premium schema (`Build-MockPlannerSchema.ps1` + `Seed-MockPlannerData.ps1`),
 in a Dataverse environment where Project for the web is not installed.
 
-Test results — 9 flow runs, all Succeeded, exactly 3 cards created:
+Test results - 9 flow runs, all Succeeded, exactly 3 cards created:
 
 | Test | Expected | Result |
 | --- | --- | --- |
@@ -271,23 +268,22 @@ created. Without it you would have 9 duplicates in the manager's plan.
 
 Note the flow also survives its own writes. Creating the copy fires the trigger again (same table,
 Organization scope), but the copy lands in the target bucket with the flag unset, so the condition
-is false and it stops. That is an accidental loop guard — see *Known gotchas* before you extend it.
+is false and it stops. That is an accidental loop guard - see *Known gotchas* before you extend it.
 
 ---
 
-## Step 4 — test it
+## Step 4 - test it
 
 1. In the source plan, drag a card into the **Escalate** bucket.
 2. Flow run history → confirm one run, one created row.
 3. Move the card out and back in → confirm **no second copy** (dedupe working).
 4. Check the card appears in the manager 1:1 plan in the Planner UI.
 
-Planner's Dataverse writes are not instant — allow up to ~60 seconds for the trigger to fire.
+Planner's Dataverse writes are not instant - allow up to ~60 seconds for the trigger to fire.
 
 ---
 
 ## Known gotchas
-
 - **Licensing.** Reading/writing `msdyn_*` tables via Dataverse needs an appropriate Project plan
   for the flow's connection identity. A Power Automate licence alone is not enough. Use a service
   account with a Project Plan 3 / Planner Premium licence.
@@ -301,9 +297,9 @@ Planner's Dataverse writes are not instant — allow up to ~60 seconds for the t
   tables. `msdyn_project*` only appears after the Project app is installed into that specific
   environment. Install via PPAC, or the app-management API:
   `POST https://api.powerplatform.com/appmanagement/environments/{envId}/applicationPackages/{uniqueName}/install?api-version=2022-03-01-preview`
-  Note the path takes the package **uniqueName** (e.g. `ProjectOperations_Anchor`) — passing the
+  Note the path takes the package **uniqueName** (e.g. `ProjectOperations_Anchor`) - passing the
   `applicationId` GUID returns `400 Package requested for installation was not found`.
-- **Singular table name in the trigger, plural in the actions.** See the trigger section — this
+- **Singular table name in the trigger, plural in the actions.** See the trigger section - this
   fails at save time with a confusing `EntityNotFound`.
 - **Don't create the reverse sync** without a loop guard. The flow already triggers on its own
   writes (it's the same table at Organization scope) and only stops because the copy doesn't match
@@ -322,25 +318,22 @@ Planner's Dataverse writes are not instant — allow up to ~60 seconds for the t
 Being precise about this, because the difference matters.
 
 **Verified against a real environment with the genuine `msdyn_project*` tables:**
-
-- The schema — table names, entity set names, column names, lookup navigation properties. Taken
+- The schema - table names, entity set names, column names, lookup navigation properties. Taken
   from live metadata, not documentation.
 - `msdyn_projecttask` and `msdyn_projectbucket` **reject direct creates**. Reproduced, with the
   exact error text quoted above. `msdyn_project` does not.
 - Bucket display name is **`msdyn_name`**, while plan and task use `msdyn_subject`.
 - There is **no label/tag column** on `msdyn_projecttask`, which settles the bucket-vs-label design
-  question — a label-driven trigger has nothing to filter on.
+  question - a label-driven trigger has nothing to filter on.
 - The solution ZIP **imports cleanly**, and the flow arrives with the correct trigger, name-based
   conditions, target lookups, guard and Schedule API steps.
 
 **Verified only against mock tables** (a prototype mirroring the schema, 9 runs, 3 cards created):
-
 - The trigger fires on the bucket move.
-- The dedupe guard holds — repeated edits and re-escalation do not create extra copies.
+- The dedupe guard holds - repeated edits and re-escalation do not create extra copies.
 - The flow does not loop on its own writes.
 
 **Not verified:**
-
 - The three Schedule API calls have **not been executed**. The environment used for schema
   discovery had only a partial Project install, so `msdyn_CreateOperationSetV1`, `msdyn_PssCreateV1`
   and `msdyn_ExecuteOperationSetV1` were absent. Their shape follows Microsoft's documented
@@ -348,11 +341,11 @@ Being precise about this, because the difference matters.
 - That `msdyn_projectname` and `msdyn_projectbucketname` are populated in the **trigger** payload.
   They exist on the table and Dataverse populates lookup name columns as standard, but the
   name-based condition depends on it. If the flow never fires on a genuine escalation, this is the
-  first thing to check — swap the condition to `_msdyn_projectbucket_value` against the bucket GUID.
+  first thing to check - swap the condition to `_msdyn_projectbucket_value` against the bucket GUID.
 - Whether Planner Premium adds columns beyond what Project Operations installs.
 
 **So on first run, watch for:** the operation set executing but the task not appearing (usually a
-bad `@odata.bind` path), or `msdyn_LinkStatus` being rejected. Check the flow run history — the
+bad `@odata.bind` path), or `msdyn_LinkStatus` being rejected. Check the flow run history - the
 `Execute_operation_set` step returns the failure detail.
 
 
@@ -366,11 +359,10 @@ bad `@odata.bind` path), or `msdyn_LinkStatus` being rejected. Check the flow ru
 | `Build-MockPlannerSchema.ps1` | Create mock tables mirroring the schema, for environments without Project |
 | `Seed-MockPlannerData.ps1` | Seed the mock two-plan 1:1 scenario |
 
-All take `-OrgUrl` and are idempotent. Pass `-WorkDir` and `-OutZip` explicitly — `$PSScriptRoot`
+All take `-OrgUrl` and are idempotent. Pass `-WorkDir` and `-OutZip` explicitly - `$PSScriptRoot`
 does not resolve in a param block when the script is launched via `powershell -File`.
 
 Three packaging traps the build script guards against, all of which broke a real import first:
-
 - **No BOM.** `Set-Content -Encoding UTF8` on Windows PowerShell writes a UTF-8 BOM. Import then
   fails with `Flow clientdata is in invalid format ... Unexpected character encountered while
   parsing value`. Use `[IO.File]::WriteAllText` with `UTF8Encoding($false)`.
