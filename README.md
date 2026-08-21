@@ -8,6 +8,7 @@
 [![Mock schema](https://img.shields.io/badge/testable-without_Premium_licence-success?style=flat-square)](scripts/)
 [![Power Automate](https://img.shields.io/badge/Power_Automate-0066FF?style=flat-square&logo=microsoftpowerautomate&logoColor=white)](#)
 [![Dataverse](https://img.shields.io/badge/Dataverse-0078D4?style=flat-square)](#)
+[![Sample code](https://img.shields.io/badge/sample_code-not_production_ready-orange?style=flat-square)](#disclaimer)
 [![Licence](https://img.shields.io/badge/licence-MIT-blue?style=flat-square)](LICENSE)
 
 </div>
@@ -192,6 +193,23 @@ Project app is **installed into that specific environment**.
 - Buckets must be created by hand - Planner Premium doesn't allow automated bucket creation.
 
 **Privacy:** card titles are copied into a plan the manager can see.
+
+---
+
+## Disclaimer
+
+This is **sample code**, published as a reusable reference pattern.
+
+- Provided **as is**, without warranty of any kind, express or implied. See [LICENSE](LICENSE).
+- **Not production ready.** Treat it as a starting point, not a finished solution. Review, test and
+  harden it against your own requirements before any real use.
+- **Not an official Microsoft product** and not affiliated with, endorsed by, or supported by
+  Microsoft. Product names are trademarks of their respective owners.
+- **No support commitment.** Issues and pull requests are welcome, but nothing here carries an SLA.
+- Some behaviours documented here rely on **undocumented or preview platform features** that can
+  change without notice. Verify against current documentation before depending on them.
+- You are responsible for security, privacy, licensing and regulatory compliance in your own
+  environment.
 
 ---
 
