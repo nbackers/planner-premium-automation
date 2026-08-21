@@ -1,7 +1,19 @@
-# Planner Premium Automation - Escalate a card to your manager's 1:1
+<div align="center">
+
+# Planner Premium Automation
+
+**Escalate a card to your manager's 1:1, automatically**
+
+[![Solution](https://img.shields.io/badge/managed_solution-included-742774?style=flat-square)](solution/)
+[![Mock schema](https://img.shields.io/badge/testable-without_Premium_licence-success?style=flat-square)](scripts/)
+[![Power Automate](https://img.shields.io/badge/Power_Automate-0066FF?style=flat-square&logo=microsoftpowerautomate&logoColor=white)](#)
+[![Dataverse](https://img.shields.io/badge/Dataverse-0078D4?style=flat-square)](#)
+[![Licence](https://img.shields.io/badge/licence-MIT-blue?style=flat-square)](LICENSE)
+
+</div>
 
 Automate Microsoft Planner Premium (Project for the web) with Power Automate, using the
-**Dataverse** connector - because the Planner connector cannot see Premium plans at all.
+**Dataverse** connector, because the Planner connector cannot see Premium plans at all.
 
 Ships as an importable managed solution, configured entirely through environment variables.
 No flow editing required.
@@ -47,25 +59,29 @@ obviously documented as being Planner at all.
 
 ## How it works
 
+```mermaid
+flowchart TD
+    A["<b>Planner Premium UI</b><br/>Drag card to 'Escalate' bucket"] --> B[("Dataverse<br/>msdyn_projecttask updated")]
+    B --> C["<b>Power Automate</b><br/>Trigger: row modified"]
+    C --> D{"In the Escalate<br/>bucket?"}
+    D -->|no| X["Stop"]
+    D -->|yes| E{"Already<br/>copied?"}
+    E -->|yes| X
+    E -->|no| F["Project Schedule API<br/>creates the copy"]
+    F --> G[("Dataverse<br/>msdyn_projecttask created")]
+    G --> H["<b>Planner Premium UI</b><br/>Card appears in manager's 1:1 plan"]
+
+    style A fill:#742774,stroke:#4A184A,color:#fff
+    style H fill:#742774,stroke:#4A184A,color:#fff
+    style B fill:#0078D4,stroke:#005A9E,color:#fff
+    style G fill:#0078D4,stroke:#005A9E,color:#fff
+    style C fill:#0066FF,stroke:#0047B3,color:#fff
+    style F fill:#0066FF,stroke:#0047B3,color:#fff
+    style X fill:#616161,stroke:#404040,color:#fff
 ```
-Planner Premium UI              Dataverse                    Power Automate
-─────────────────────           ─────────────────            ────────────────────────
-Drag card to "Escalate"   ──►   msdyn_projecttask   ──────►  Trigger: row modified
-bucket                          row updated                          │
-                                                                     ▼
-                                                            Is it in the Escalate
-                                                            bucket?           │ no ──► stop
-                                                                     │ yes
-                                                                     ▼
-                                                            Already copied?   │ yes ─► stop
-                                                                     │ no
-                                                                     ▼
-                                                            Project Schedule API
-                                                            creates the copy
-                                                                     │
-Card appears in manager's  ◄────  msdyn_projecttask  ◄───────────────┘
-1:1 plan                          row created
-```
+
+> The dedupe guard is the part that matters. In testing the trigger fired **9 times** and created
+> exactly **3** cards. Without it you would have 9 duplicates.
 
 ### Planner Premium → Dataverse mapping
 
