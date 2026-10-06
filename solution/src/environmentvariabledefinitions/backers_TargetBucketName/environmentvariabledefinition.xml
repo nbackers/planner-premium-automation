@@ -1,0 +1,13 @@
+<environmentvariabledefinition schemaname="backers_TargetBucketName">
+  <description default="The exact name of the bucket in the target plan where copies land. Example: Escalated">
+    <label description="The exact name of the bucket in the target plan where copies land. Example: Escalated" languagecode="1033" />
+  </description>
+  <displayname default="Bucket for copies">
+    <label description="Bucket for copies" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.0</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>1</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

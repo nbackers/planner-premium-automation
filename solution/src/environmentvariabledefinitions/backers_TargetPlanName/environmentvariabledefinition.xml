@@ -1,0 +1,13 @@
+<environmentvariabledefinition schemaname="backers_TargetPlanName">
+  <description default="The exact name of the plan copies land in. Example: Escalations">
+    <label description="The exact name of the plan copies land in. Example: Escalations" languagecode="1033" />
+  </description>
+  <displayname default="Copy into this plan">
+    <label description="Copy into this plan" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.0</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>1</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

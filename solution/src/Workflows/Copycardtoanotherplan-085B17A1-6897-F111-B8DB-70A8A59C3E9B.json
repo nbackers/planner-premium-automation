@@ -1,0 +1,296 @@
+{
+    "properties":  {
+                       "connectionReferences":  {
+                                                    "shared_commondataserviceforapps":  {
+                                                                                            "connection":  {
+                                                                                                               "connectionReferenceLogicalName":  "backers_dataverseescalate"
+                                                                                                           },
+                                                                                            "runtimeSource":  "embedded",
+                                                                                            "api":  {
+                                                                                                        "name":  "shared_commondataserviceforapps"
+                                                                                                    }
+                                                                                        }
+                                                },
+                       "definition":  {
+                                          "$schema":  "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                                          "contentVersion":  "1.0.0.0",
+                                          "parameters":  {
+                                                             "$connections":  {
+                                                                                  "defaultValue":  {
+
+                                                                                                   },
+                                                                                  "type":  "Object"
+                                                                              },
+                                                             "$authentication":  {
+                                                                                     "defaultValue":  {
+
+                                                                                                      },
+                                                                                     "type":  "SecureObject"
+                                                                                 },
+                                                             "backers_SourcePlanName (backers_SourcePlanName)":  {
+                                                                                                                     "type":  "String",
+                                                                                                                     "defaultValue":  "",
+                                                                                                                     "metadata":  {
+                                                                                                                                      "schemaName":  "backers_SourcePlanName"
+                                                                                                                                  }
+                                                                                                                 },
+                                                             "backers_EscalateBucketName (backers_EscalateBucketName)":  {
+                                                                                                                             "type":  "String",
+                                                                                                                             "defaultValue":  "",
+                                                                                                                             "metadata":  {
+                                                                                                                                              "schemaName":  "backers_EscalateBucketName"
+                                                                                                                                          }
+                                                                                                                         },
+                                                             "backers_TargetPlanName (backers_TargetPlanName)":  {
+                                                                                                                     "type":  "String",
+                                                                                                                     "defaultValue":  "",
+                                                                                                                     "metadata":  {
+                                                                                                                                      "schemaName":  "backers_TargetPlanName"
+                                                                                                                                  }
+                                                                                                                 },
+                                                             "backers_TargetBucketName (backers_TargetBucketName)":  {
+                                                                                                                         "type":  "String",
+                                                                                                                         "defaultValue":  "",
+                                                                                                                         "metadata":  {
+                                                                                                                                          "schemaName":  "backers_TargetBucketName"
+                                                                                                                                      }
+                                                                                                                     }
+                                                         },
+                                          "triggers":  {
+                                                           "When_a_card_changes":  {
+                                                                                       "type":  "OpenApiConnectionWebhook",
+                                                                                       "inputs":  {
+                                                                                                      "authentication":  "@parameters(\u0027$authentication\u0027)",
+                                                                                                      "host":  {
+                                                                                                                   "apiId":  "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                                                                                                   "connectionName":  "shared_commondataserviceforapps",
+                                                                                                                   "operationId":  "SubscribeWebhookTrigger"
+                                                                                                               },
+                                                                                                      "parameters":  {
+                                                                                                                         "subscriptionRequest/entityname":  "msdyn_projecttask",
+                                                                                                                         "subscriptionRequest/scope":  4,
+                                                                                                                         "subscriptionRequest/message":  4,
+                                                                                                                         "subscriptionRequest/filteringattributes":  "msdyn_subject,msdyn_projectbucket"
+                                                                                                                     }
+                                                                                                  }
+                                                                                   }
+                                                       },
+                                          "actions":  {
+                                                          "Is_this_an_escalated_card":  {
+                                                                                            "type":  "If",
+                                                                                            "runAfter":  {
+
+                                                                                                         },
+                                                                                            "expression":  {
+                                                                                                               "and":  [
+                                                                                                                           {
+                                                                                                                               "equals":  [
+                                                                                                                                              "@triggerOutputs()?[\u0027body/msdyn_projectname\u0027]",
+                                                                                                                                              "@parameters(\u0027backers_SourcePlanName (backers_SourcePlanName)\u0027)"
+                                                                                                                                          ]
+                                                                                                                           },
+                                                                                                                           {
+                                                                                                                               "equals":  [
+                                                                                                                                              "@triggerOutputs()?[\u0027body/msdyn_projectbucketname\u0027]",
+                                                                                                                                              "@parameters(\u0027backers_EscalateBucketName (backers_EscalateBucketName)\u0027)"
+                                                                                                                                          ]
+                                                                                                                           }
+                                                                                                                       ]
+                                                                                                           },
+                                                                                            "actions":  {
+                                                                                                            "Look_for_an_existing_copy":  {
+                                                                                                                                              "type":  "OpenApiConnection",
+                                                                                                                                              "inputs":  {
+                                                                                                                                                             "authentication":  "@parameters(\u0027$authentication\u0027)",
+                                                                                                                                                             "host":  {
+                                                                                                                                                                          "apiId":  "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                                                                                                                                                          "connectionName":  "shared_commondataserviceforapps",
+                                                                                                                                                                          "operationId":  "ListRecords"
+                                                                                                                                                                      },
+                                                                                                                                                             "parameters":  {
+                                                                                                                                                                                "entityName":  "msdyn_projecttasks",
+                                                                                                                                                                                "$select":  "msdyn_projecttaskid",
+                                                                                                                                                                                "$top":  1,
+                                                                                                                                                                                "$filter":  "backers_escalatesourceid eq \u0027@{triggerOutputs()?[\u0027body/msdyn_projecttaskid\u0027]}\u0027"
+                                                                                                                                                                            }
+                                                                                                                                                         }
+                                                                                                                                          },
+                                                                                                            "Only_if_there_is_no_copy_yet":  {
+                                                                                                                                                 "type":  "If",
+                                                                                                                                                 "runAfter":  {
+                                                                                                                                                                  "Look_for_an_existing_copy":  [
+                                                                                                                                                                                                    "Succeeded"
+                                                                                                                                                                                                ]
+                                                                                                                                                              },
+                                                                                                                                                 "expression":  {
+                                                                                                                                                                    "equals":  [
+                                                                                                                                                                                   "@length(outputs(\u0027Look_for_an_existing_copy\u0027)?[\u0027body/value\u0027])",
+                                                                                                                                                                                   0
+                                                                                                                                                                               ]
+                                                                                                                                                                },
+                                                                                                                                                 "actions":  {
+                                                                                                                                                                 "Find_the_target_plan":  {
+                                                                                                                                                                                              "type":  "OpenApiConnection",
+                                                                                                                                                                                              "inputs":  {
+                                                                                                                                                                                                             "authentication":  "@parameters(\u0027$authentication\u0027)",
+                                                                                                                                                                                                             "host":  {
+                                                                                                                                                                                                                          "apiId":  "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                                                                                                                                                                                                          "connectionName":  "shared_commondataserviceforapps",
+                                                                                                                                                                                                                          "operationId":  "ListRecords"
+                                                                                                                                                                                                                      },
+                                                                                                                                                                                                             "parameters":  {
+                                                                                                                                                                                                                                "entityName":  "msdyn_projects",
+                                                                                                                                                                                                                                "$select":  "msdyn_projectid",
+                                                                                                                                                                                                                                "$top":  1,
+                                                                                                                                                                                                                                "$filter":  "msdyn_subject eq \u0027@{parameters(\u0027backers_TargetPlanName (backers_TargetPlanName)\u0027)}\u0027"
+                                                                                                                                                                                                                            }
+                                                                                                                                                                                                         }
+                                                                                                                                                                                          },
+                                                                                                                                                                 "Find_the_target_bucket":  {
+                                                                                                                                                                                                "type":  "OpenApiConnection",
+                                                                                                                                                                                                "inputs":  {
+                                                                                                                                                                                                               "authentication":  "@parameters(\u0027$authentication\u0027)",
+                                                                                                                                                                                                               "host":  {
+                                                                                                                                                                                                                            "apiId":  "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                                                                                                                                                                                                            "connectionName":  "shared_commondataserviceforapps",
+                                                                                                                                                                                                                            "operationId":  "ListRecords"
+                                                                                                                                                                                                                        },
+                                                                                                                                                                                                               "parameters":  {
+                                                                                                                                                                                                                                  "entityName":  "msdyn_projectbuckets",
+                                                                                                                                                                                                                                  "$select":  "msdyn_projectbucketid",
+                                                                                                                                                                                                                                  "$top":  1,
+                                                                                                                                                                                                                                  "$filter":  "msdyn_name eq \u0027@{parameters(\u0027backers_TargetBucketName (backers_TargetBucketName)\u0027)}\u0027 and _msdyn_project_value eq @{first(outputs(\u0027Find_the_target_plan\u0027)?[\u0027body/value\u0027])?[\u0027msdyn_projectid\u0027]}"
+                                                                                                                                                                                                                              }
+                                                                                                                                                                                                           },
+                                                                                                                                                                                                "runAfter":  {
+                                                                                                                                                                                                                 "Find_the_target_plan":  [
+                                                                                                                                                                                                                                              "Succeeded"
+                                                                                                                                                                                                                                          ]
+                                                                                                                                                                                                             }
+                                                                                                                                                                                            },
+                                                                                                                                                                 "Check_the_names_matched":  {
+                                                                                                                                                                                                 "type":  "If",
+                                                                                                                                                                                                 "runAfter":  {
+                                                                                                                                                                                                                  "Find_the_target_bucket":  [
+                                                                                                                                                                                                                                                 "Succeeded"
+                                                                                                                                                                                                                                             ]
+                                                                                                                                                                                                              },
+                                                                                                                                                                                                 "expression":  {
+                                                                                                                                                                                                                    "and":  [
+                                                                                                                                                                                                                                {
+                                                                                                                                                                                                                                    "greater":  [
+                                                                                                                                                                                                                                                    "@length(outputs(\u0027Find_the_target_plan\u0027)?[\u0027body/value\u0027])",
+                                                                                                                                                                                                                                                    0
+                                                                                                                                                                                                                                                ]
+                                                                                                                                                                                                                                },
+                                                                                                                                                                                                                                {
+                                                                                                                                                                                                                                    "greater":  [
+                                                                                                                                                                                                                                                    "@length(outputs(\u0027Find_the_target_bucket\u0027)?[\u0027body/value\u0027])",
+                                                                                                                                                                                                                                                    0
+                                                                                                                                                                                                                                                ]
+                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                            ]
+                                                                                                                                                                                                                },
+                                                                                                                                                                                                 "actions":  {
+                                                                                                                                                                                                                 "Create_operation_set":  {
+                                                                                                                                                                                                                                              "type":  "OpenApiConnection",
+                                                                                                                                                                                                                                              "inputs":  {
+                                                                                                                                                                                                                                                             "authentication":  "@parameters(\u0027$authentication\u0027)",
+                                                                                                                                                                                                                                                             "host":  {
+                                                                                                                                                                                                                                                                          "apiId":  "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                                                                                                                                                                                                                                                          "connectionName":  "shared_commondataserviceforapps",
+                                                                                                                                                                                                                                                                          "operationId":  "PerformUnboundAction"
+                                                                                                                                                                                                                                                                      },
+                                                                                                                                                                                                                                                             "parameters":  {
+                                                                                                                                                                                                                                                                                "actionName":  "msdyn_CreateOperationSetV1",
+                                                                                                                                                                                                                                                                                "item":  {
+                                                                                                                                                                                                                                                                                             "Description":  "Copied from source plan",
+                                                                                                                                                                                                                                                                                             "Project":  "@{first(outputs(\u0027Find_the_target_plan\u0027)?[\u0027body/value\u0027])?[\u0027msdyn_projectid\u0027]}"
+                                                                                                                                                                                                                                                                                         }
+                                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                         }
+                                                                                                                                                                                                                                          },
+                                                                                                                                                                                                                 "Queue_the_new_card":  {
+                                                                                                                                                                                                                                            "type":  "OpenApiConnection",
+                                                                                                                                                                                                                                            "inputs":  {
+                                                                                                                                                                                                                                                           "authentication":  "@parameters(\u0027$authentication\u0027)",
+                                                                                                                                                                                                                                                           "host":  {
+                                                                                                                                                                                                                                                                        "apiId":  "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                                                                                                                                                                                                                                                        "connectionName":  "shared_commondataserviceforapps",
+                                                                                                                                                                                                                                                                        "operationId":  "PerformUnboundAction"
+                                                                                                                                                                                                                                                                    },
+                                                                                                                                                                                                                                                           "parameters":  {
+                                                                                                                                                                                                                                                                              "actionName":  "msdyn_PssCreateV1",
+                                                                                                                                                                                                                                                                              "item":  {
+                                                                                                                                                                                                                                                                                           "Entity":  "{\r\n  \"@odata.type\": \"Microsoft.Dynamics.CRM.msdyn_projecttask\",\r\n  \"msdyn_projecttaskid\": \"@{guid()}\",\r\n  \"msdyn_subject\": \"@{triggerOutputs()?[\u0027body/msdyn_subject\u0027]}\",\r\n  \"msdyn_project@odata.bind\": \"/msdyn_projects(@{first(outputs(\u0027Find_the_target_plan\u0027)?[\u0027body/value\u0027])?[\u0027msdyn_projectid\u0027]})\",\r\n  \"msdyn_projectbucket@odata.bind\": \"/msdyn_projectbuckets(@{first(outputs(\u0027Find_the_target_bucket\u0027)?[\u0027body/value\u0027])?[\u0027msdyn_projectbucketid\u0027]})\",\r\n  \"backers_escalatesourceid\": \"@{triggerOutputs()?[\u0027body/msdyn_projecttaskid\u0027]}\",\r\n  \"msdyn_start\": \"@{utcNow()}\",\r\n  \"msdyn_scheduledstart\": \"@{utcNow()}\",\r\n  \"msdyn_scheduledend\": \"@{addDays(utcNow(),5)}\",\r\n  \"msdyn_LinkStatus\": 192350000\r\n}",
+                                                                                                                                                                                                                                                                                           "OperationSetId":  "@outputs(\u0027Create_operation_set\u0027)?[\u0027body/OperationSetId\u0027]"
+                                                                                                                                                                                                                                                                                       }
+                                                                                                                                                                                                                                                                          }
+                                                                                                                                                                                                                                                       },
+                                                                                                                                                                                                                                            "runAfter":  {
+                                                                                                                                                                                                                                                             "Create_operation_set":  [
+                                                                                                                                                                                                                                                                                          "Succeeded"
+                                                                                                                                                                                                                                                                                      ]
+                                                                                                                                                                                                                                                         }
+                                                                                                                                                                                                                                        },
+                                                                                                                                                                                                                 "Execute_operation_set":  {
+                                                                                                                                                                                                                                               "type":  "OpenApiConnection",
+                                                                                                                                                                                                                                               "inputs":  {
+                                                                                                                                                                                                                                                              "authentication":  "@parameters(\u0027$authentication\u0027)",
+                                                                                                                                                                                                                                                              "host":  {
+                                                                                                                                                                                                                                                                           "apiId":  "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                                                                                                                                                                                                                                                                           "connectionName":  "shared_commondataserviceforapps",
+                                                                                                                                                                                                                                                                           "operationId":  "PerformUnboundAction"
+                                                                                                                                                                                                                                                                       },
+                                                                                                                                                                                                                                                              "parameters":  {
+                                                                                                                                                                                                                                                                                 "actionName":  "msdyn_ExecuteOperationSetV1",
+                                                                                                                                                                                                                                                                                 "item":  {
+                                                                                                                                                                                                                                                                                              "OperationSetId":  "@outputs(\u0027Create_operation_set\u0027)?[\u0027body/OperationSetId\u0027]"
+                                                                                                                                                                                                                                                                                          }
+                                                                                                                                                                                                                                                                             }
+                                                                                                                                                                                                                                                          },
+                                                                                                                                                                                                                                               "runAfter":  {
+                                                                                                                                                                                                                                                                "Queue_the_new_card":  [
+                                                                                                                                                                                                                                                                                           "Succeeded"
+                                                                                                                                                                                                                                                                                       ]
+                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                           }
+                                                                                                                                                                                                             },
+                                                                                                                                                                                                 "else":  {
+                                                                                                                                                                                                              "actions":  {
+                                                                                                                                                                                                                              "Stop_and_explain":  {
+                                                                                                                                                                                                                                                       "type":  "Terminate",
+                                                                                                                                                                                                                                                       "runAfter":  {
+
+                                                                                                                                                                                                                                                                    },
+                                                                                                                                                                                                                                                       "inputs":  {
+                                                                                                                                                                                                                                                                      "runError":  {
+                                                                                                                                                                                                                                                                                       "code":  "SetupNameNotFound",
+                                                                                                                                                                                                                                                                                       "message":  "Could not find a plan called \u0027@{parameters(\u0027backers_TargetPlanName (backers_TargetPlanName)\u0027)}\u0027 with a bucket called \u0027@{parameters(\u0027backers_TargetBucketName (backers_TargetBucketName)\u0027)}\u0027. Open Solutions \u003e Planner Premium - Copy card to another plan and check the four name settings match your plans and buckets exactly, including capitals and spacing."
+                                                                                                                                                                                                                                                                                   },
+                                                                                                                                                                                                                                                                      "runStatus":  "Failed"
+                                                                                                                                                                                                                                                                  }
+                                                                                                                                                                                                                                                   }
+                                                                                                                                                                                                                          }
+                                                                                                                                                                                                          }
+                                                                                                                                                                                             }
+                                                                                                                                                             },
+                                                                                                                                                 "else":  {
+                                                                                                                                                              "actions":  {
+
+                                                                                                                                                                          }
+                                                                                                                                                          }
+                                                                                                                                             }
+                                                                                                        },
+                                                                                            "else":  {
+                                                                                                         "actions":  {
+
+                                                                                                                     }
+                                                                                                     }
+                                                                                        }
+                                                      }
+                                      },
+                       "templateName":  null
+                   },
+    "schemaVersion":  "1.0.0.0"
+}

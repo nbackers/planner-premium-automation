@@ -1,0 +1,34 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse every script on Windows PowerShell 5.1
+        # The scripts target 5.1, which accepts less syntax than PowerShell 7.
+        shell: powershell
+        run: |
+          $failed = 0
+          Get-ChildItem -Recurse -Include *.ps1, *.psm1 | ForEach-Object {
+            $tokens = $null; $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$errors)
+            foreach ($e in $errors) { Write-Host "$($_.Name):$($e.Extent.StartLineNumber) $($e.Message)"; $failed++ }
+          }
+          if ($failed) { exit 1 }
+
+      - name: PSScriptAnalyzer (error severity)
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+          $results = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error
+          $results | Format-Table -AutoSize
+          if ($results) { exit 1 }

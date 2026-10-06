@@ -1,0 +1,13 @@
+<environmentvariabledefinition schemaname="backers_SourcePlanName">
+  <description default="The exact name of the plan cards are copied from. Example: Team backlog">
+    <label description="The exact name of the plan cards are copied from. Example: Team backlog" languagecode="1033" />
+  </description>
+  <displayname default="Watch this plan">
+    <label description="Watch this plan" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.0</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>1</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>

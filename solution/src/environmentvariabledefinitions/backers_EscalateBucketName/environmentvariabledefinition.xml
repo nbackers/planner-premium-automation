@@ -1,0 +1,13 @@
+<environmentvariabledefinition schemaname="backers_EscalateBucketName">
+  <description default="The exact name of the bucket that triggers the copy. Example: Escalate">
+    <label description="The exact name of the bucket that triggers the copy. Example: Escalate" languagecode="1033" />
+  </description>
+  <displayname default="Escalate bucket">
+    <label description="Escalate bucket" languagecode="1033" />
+  </displayname>
+  <introducedversion>1.0.0.0</introducedversion>
+  <iscustomizable>1</iscustomizable>
+  <isrequired>1</isrequired>
+  <secretstore>0</secretstore>
+  <type>100000000</type>
+</environmentvariabledefinition>
